@@ -23,7 +23,46 @@ minikube start
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 
-### **Step 2: Deploy MySQL to Kubernetes**
+### **Step 2: Create MySQL ConfigMap and Secrets**
+
+#### **A. Create ConfigMap for Database Configuration**
+```sh
+kubectl apply -f mysql-configMap.yaml
+```
+#### **Sample Output:**
+```
+configmap/db-config created
+```
+Verify the ConfigMap:
+```sh
+kubectl get configMap
+```
+#### **Sample Output:**
+```
+NAME               DATA   AGE
+db-config          2      9s
+kube-root-ca.crt   1      4m41s
+```
+
+#### **B. Create Secrets for Database Credentials**
+```sh
+kubectl apply -f mysql-secrets.yaml
+```
+#### **Sample Output:**
+```
+secret/mysql-secrets created
+```
+Verify the Secrets:
+```sh
+kubectl get secrets
+```
+#### **Sample Output:**
+```
+NAME            TYPE     DATA   AGE
+mysql-secrets   Opaque   2      8s
+```
+
+### **Step 3: Deploy MySQL to Kubernetes**
 ```sh
 kubectl apply -f db-deployment.yaml
 ```
@@ -34,7 +73,7 @@ deployment.apps/mysql created
 service/mysql created
 ```
 
-### **Step 3: Verify MySQL Pod Status**
+### **Step 4: Verify MySQL Pod Status**
 ```sh
 kubectl get pods
 ```
@@ -44,7 +83,7 @@ NAME                     READY   STATUS    RESTARTS   AGE
 mysql-6fb8b45878-tnm4j   1/1     Running   0          110s
 ```
 
-### **Step 4: Access MySQL Pod**
+### **Step 5: Access MySQL Pod**
 ```sh
 kubectl exec -it <mysql-pod-name> -- /bin/bash
 ```
@@ -54,7 +93,7 @@ mysql -h mysql -u root -p
 ```
 (Enter password: `root`)
 
-### **Step 5: Verify MySQL Databases**
+### **Step 6: Verify MySQL Databases**
 ```sql
 show databases;
 ```
@@ -84,8 +123,13 @@ mvn clean package -DskipTests
 [INFO] Building jar: target/app.jar
 [INFO] BUILD SUCCESS
 ```
+### **Step 2: Use Minikube's Docker Daemon**
+```sh
+eval $(minikube -p minikube docker-env)
+```
+This configures Docker CLI to use Minikube’s internal Docker daemon.
 
-### **Step 2: Build the Docker Image**
+### **Step 3: Build the Docker Image**
 ```sh
 docker build -t springboot-crud-k8s:1.0 .
 ```
@@ -94,7 +138,7 @@ docker build -t springboot-crud-k8s:1.0 .
 Successfully built springboot-crud-k8s:1.0
 ```
 
-### **Step 3: Deploy Application to Kubernetes**
+### **Step 4: Deploy Application to Kubernetes**
 ```sh
 kubectl apply -f app-deployment.yaml
 ```
@@ -104,7 +148,7 @@ deployment.apps/springboot-crud-deployment created
 service/springboot-crud-svc created
 ```
 
-### **Step 4: Verify Application Deployment**
+### **Step 5: Verify Application Deployment**
 ```sh
 kubectl get deployment
 ```
@@ -114,7 +158,7 @@ NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
 springboot-crud-deployment   3/3     3            3           21s
 ```
 
-### **Step 5: Check Running Pods**
+### **Step 6: Check Running Pods**
 ```sh
 kubectl get pods
 ```
@@ -126,12 +170,12 @@ springboot-crud-deployment-7c78466c99-md54r   1/1     Running   0          32s
 springboot-crud-deployment-7c78466c99-mrrxg   1/1     Running   0          32s
 ```
 
-### **Step 6: Check Application Logs**
+### **Step 7: Check Application Logs**
 ```sh
 kubectl logs <springboot-pod-name>
 ```
 
-### **Step 7: Get the Service URL**
+### **Step 8: Get the Service URL**
 ```sh
 minikube service springboot-crud-svc --url
 ```
@@ -140,7 +184,7 @@ minikube service springboot-crud-svc --url
 http://127.0.0.1:56322
 ```
 
-### **Step 8: Open Kubernetes Dashboard**
+### **Step 9: Open Kubernetes Dashboard**
 ```sh
 minikube dashboard
 ```

@@ -42,9 +42,15 @@ spec:
             - "rm -rf /var/lib/mysql/* && docker-entrypoint.sh mysqld"
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: root
+              valueFrom:
+                secretKeyRef:  
+                  name: mysql-secrets
+                  key: password
             - name: MYSQL_DATABASE # Setting Database Name from a 'ConfigMap'
-              value: kubernetes
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: dbName
             - name: MYSQL_ROOT_HOST
               value: "%"
           ports:
